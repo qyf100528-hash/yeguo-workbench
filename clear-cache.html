@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>YEGUO · 清除缓存</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+    background:#f2f7ec; color:#3a4a32; font-family:system-ui,-apple-system,"PingFang SC",sans-serif; }
+  .card { background:#fff; border-radius:20px; padding:36px 34px; width:min(420px,88vw);
+    box-shadow:0 12px 40px rgba(63,94,50,.14); text-align:center; }
+  .logo { width:64px; height:64px; border-radius:18px; margin:0 auto 16px; display:grid; place-items:center;
+    background:linear-gradient(135deg,#61a352,#4f8f6a); color:#fff; font-size:30px; font-weight:800; }
+  h1 { font-size:20px; margin:0 0 6px; }
+  .sub { font-size:13px; color:#8a9a7e; margin:0 0 22px; }
+  .status { font-size:14px; min-height:22px; margin-bottom:6px; color:#4f8f6a; font-weight:600; }
+  .bar { height:6px; border-radius:6px; background:#e3ecdd; overflow:hidden; margin-bottom:22px; }
+  .bar i { display:block; height:100%; width:0; background:#61a352; border-radius:6px; transition:width .4s; }
+  .hint { font-size:12px; color:#a8b39c; line-height:1.7; }
+  .hint b { color:#6f8f6a; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">Y</div>
+    <h1>清除 YEGUO 缓存</h1>
+    <p class="sub">正在清除旧版本缓存，稍等片刻自动进入最新版</p>
+    <div class="status" id="st">正在准备…</div>
+    <div class="bar"><i id="fg"></i></div>
+    <p class="hint">如果几秒后没有自动跳转，请点这里 <a href="workbench-mobile.html" id="go" style="color:#4f8f6a">进入工作台</a></p>
+  </div>
+<script>
+(function(){
+  var st = document.getElementById("st");
+  var fg = document.getElementById("fg");
+  function step(t, msg){ st.textContent = msg; fg.style.width = t + "%"; }
+  (async function(){
+    try{
+      // 1. 注销所有 Service Worker
+      step(25, "注销旧版离线缓存…");
+      if (navigator.serviceWorker) {
+        var regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map(function(r){ return r.unregister(); }));
+      }
+      step(60, "清空缓存数据…");
+      // 2. 清空 Cache Storage
+      if (window.caches && caches.keys) {
+        var keys = await caches.keys();
+        await Promise.all(keys.map(function(k){ return caches.delete(k); }));
+      }
+      step(90, "完成，正在跳转到最新版…");
+      setTimeout(function(){
+        step(100, "跳转中…");
+        location.replace("workbench-mobile.html");
+      }, 500);
+    }catch(err){
+      step(100, "处理完成");
+      st.style.color = "#c25d4f";
+      setTimeout(function(){ location.replace("workbench-mobile.html"); }, 600);
+    }
+  })();
+})();
+</script>
+</body>
+</html>
