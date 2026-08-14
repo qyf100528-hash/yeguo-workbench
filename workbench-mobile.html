@@ -455,10 +455,6 @@ const CONFIG = {
   overview: [
     { key: "todo",  label: "今日计划", icon: "list", color: "var(--accent)",
       calc: d => { const it=d.todo||[]; const done=it.filter(x=>x.done).length; return { value: it.length?Math.round(done/it.length*100):0, sub: `${done}/${it.length} 项` }; } },
-    { key: "checkin", label: "打卡", icon: "leaf", color: "var(--module-1)",
-      calc: d => { const it=d.checkin||[]; const t=today(); const done=it.filter(x=>x.log&&x.log[t]).length; return { value: it.length?Math.round(done/it.length*100):0, sub: `${done}/${it.length} 项` }; } },
-    { key: "read", label: "阅读", icon: "book", color: "var(--module-2)",
-      calc: d => avgProgress(d.read) },
     { key: "sport", label: "运动", icon: "activity", color: "var(--module-3)",
       calc: d => avgProgress(d.sport) },
   ],
@@ -472,9 +468,7 @@ const CONFIG = {
   // 快速记录按钮（点了直接给对应模块新建）
   quickAdd: [
     { label: "记运动", icon: "activity", module: "sport",   tint: "#f6f0e6", color: "var(--module-3)" },
-    { label: "记打卡", icon: "check",    module: "checkin", tint: "#eaf2e2", color: "var(--module-1)" },
     { label: "记一笔", icon: "wallet",   module: "money",   tint: "#f6efe8", color: "var(--module-4)" },
-    { label: "记想法", icon: "pen",      module: "note",    tint: "#f1eef4", color: "var(--module-5)" },
   ],
 
   // ============ 模块定义 ============
@@ -494,23 +488,6 @@ const CONFIG = {
       ],
     },
     {
-      key: "checkin", name: "习惯打卡", icon: "leaf", tint: "#eaf2e2", color: "var(--module-1)",
-      type: "checkin", desc: "补品·护肤·早睡等每日打卡",
-      seed: [
-        { id: 21, title: "喝够 8 杯水", log: {} },
-        { id: 22, title: "23:30 前睡觉", log: {} },
-        { id: 23, title: "维生素 / 补品", log: {} },
-      ],
-    },
-    {
-      key: "read", name: "阅读打卡", icon: "book", tint: "#e8f0e4", color: "var(--module-2)",
-      type: "progress", unit: "页", desc: "书籍进度·摘录·想法",
-      seed: [
-        { id: 31, title: "《认知觉醒》", current: 168, target: 300, unit: "页", note: "第 7 章：习惯的复利" },
-        { id: 32, title: "《原子习惯》", current: 90, target: 260, unit: "页", note: "" },
-      ],
-    },
-    {
       key: "sport", name: "每日锻炼", icon: "activity", tint: "#f6f0e6", color: "var(--module-3)",
       type: "progress", unit: "分钟", desc: "游泳·跑步·力量训练",
       seed: [
@@ -526,14 +503,6 @@ const CONFIG = {
         { id: 51, title: "午餐", type: "expense", amount: 32, category: "餐饮", date: isoToday() },
         { id: 52, title: "地铁", type: "expense", amount: 6, category: "交通", date: isoToday() },
         { id: 53, title: "稿费", type: "income", amount: 400, category: "工资", date: isoToday() },
-      ],
-    },
-    {
-      key: "note", name: "心情日记", icon: "pen", tint: "#f1eef4", color: "var(--module-5)",
-      type: "note", desc: "文字·摘录·心情记录",
-      moods: ["开心", "平静", "低落", "焦虑", "疲惫"],
-      seed: [
-        { id: 61, title: "今天的小确幸", content: "阳台的多肉冒出了新芽，顺手拍了张照片。", mood: "开心", date: isoToday() },
       ],
     },
     {
