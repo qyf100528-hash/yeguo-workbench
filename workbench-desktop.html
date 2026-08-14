@@ -810,24 +810,6 @@ function overviewTileHTML(){
     </div></div>`;
 }
 
-/* 本周习惯追踪表：checkin.log × 本周 7 天 */
-function habitTileHTML(){
-  const items=data.checkin||[]; const wk=weekDates(); const t=today(); const tIdx=wk.indexOf(t);
-  const dnames=["一","二","三","四","五","六","日"];
-  const palette=["var(--module-1)","var(--module-2)","var(--module-3)","var(--module-4)","var(--module-5)","var(--accent)"];
-  const chk=icon("check",13,2.8);
-  const ths=dnames.map((d,i)=>`<th class="${i===tIdx?'tdcol':''}">${d}</th>`).join("");
-  const rows = items.length ? items.map((x,ri)=>{
-    let cnt=0;
-    const cells=wk.map((day,i)=>{ const on=!!(x.log&&x.log[day]); if(on)cnt++;
-      return `<td class="${i===tIdx?'tdcol':''}"><span class="hcell js-habit ${on?'on':'off'}" data-id="${x.id}" data-day="${day}">${chk}</span></td>`; }).join("");
-    const rate=Math.round(cnt/7*100);
-    return `<tr><td class="hn"><span class="hdot" style="background:${palette[ri%palette.length]}"></span>${esc(x.title)}</td>${cells}<td class="hrate" style="color:${palette[ri%palette.length]}">${rate}%</td></tr>`;
-  }).join("") : `<tr><td colspan="9" style="text-align:center;color:var(--text-tertiary);font-size:12.5px;padding:18px 0">还没有习惯，去「习惯打卡」添加吧</td></tr>`;
-  return `<div class="tile b7"><div class="tile-h"><span class="tic">${icon("leaf",16)}</span><div class="tt"><span class="en">HABIT TRACKER</span><span class="zh">本周习惯追踪表</span></div><span class="r js-open" data-open="checkin">本周 · 周${dnames[((new Date().getDay())+6)%7]}</span></div>
-    <table class="habit-tb"><thead><tr><th class="hh">习惯</th>${ths}<th class="hr">完成率</th></tr></thead><tbody>${rows}</tbody></table></div>`;
-}
-
 /* 待办清单（仪表盘式，就地勾选） */
 function todoTileHTML(){
   const it=data.todo||[]; const done=it.filter(x=>x.done).length; const pct=it.length?Math.round(done/it.length*100):0;
@@ -883,18 +865,6 @@ function spendTileHTML(){
     <div class="book-list">${rows}</div></div>`;
 }
 
-/* 在读好书：read (progress) 各书进度 */
-function booksTileHTML(){
-  const all=data.read||[]; const colors=["var(--module-2)","var(--module-1)","var(--module-3)","var(--module-4)","var(--module-5)"];
-  const rows=all.length? all.map((x,i)=>{ const pct=Math.min(100,Math.round((x.current/x.target)*100||0)); const col=colors[i%colors.length];
-    return `<div class="book-row js-open" data-open="read"><span class="spine" style="background:${col}">${icon("book",16)}</span>
-      <div class="bmid"><div class="btt">${esc(x.title)}</div><div class="bsub">${x.note?esc(x.note):`${x.current}/${x.target} ${x.unit||'页'}`}</div>
-        <div class="bbar"><i style="width:${pct}%;background:${col}"></i></div></div><span class="bpct" style="color:${col}">${pct}%</span></div>`; }).join("")
-    : `<div class="focus-empty">还没有在读书籍，去「阅读打卡」添加吧</div>`;
-  return `<div class="tile b4"><div class="tile-h"><span class="tic">${icon("book",16)}</span><div class="tt"><span class="en">CURRENTLY READING</span><span class="zh">在读好书</span></div><span class="r">${all.length} 本</span></div>
-    <div class="book-list">${rows}</div></div>`;
-}
-
 /* 本周目标：sport (progress) 各项进度条 */
 function goalsTileHTML(){
   const all=data.sport||[]; const colors=["var(--module-3)","var(--module-1)","var(--module-2)","var(--module-4)","var(--module-5)"];
@@ -930,14 +900,11 @@ function renderHome(){
       ${overviewTileHTML()}
     </div>
 
-    ${grp("习惯与待办","HABITS&nbsp;&nbsp;&&nbsp;&nbsp;TASKS")}
-    <div class="bento">${habitTileHTML()}${todoTileHTML()}</div>
+    ${grp("待办与状态","TASKS&nbsp;&nbsp;&&nbsp;&nbsp;FOCUS")}
+    <div class="bento">${todoTileHTML()}${pomoTileHTML()}${trendTileHTML()}</div>
 
-    ${grp("专注与状态","FOCUS&nbsp;&nbsp;&&nbsp;&nbsp;MOOD")}
-    <div class="bento">${pomoTileHTML()}${trendTileHTML()}</div>
-
-    ${grp("收支与成长","MONEY&nbsp;&nbsp;&&nbsp;&nbsp;GROWTH")}
-    <div class="bento">${spendTileHTML()}${booksTileHTML()}${goalsTileHTML()}</div>`;
+    ${grp("收支与目标","MONEY&nbsp;&nbsp;&&nbsp;&nbsp;GOALS")}
+    <div class="bento">${spendTileHTML()}${goalsTileHTML()}</div>`;
   wireHome();
   startClock();
 }
